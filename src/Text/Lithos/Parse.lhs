@@ -1,8 +1,13 @@
-> {-# LANGUAGE NoMonomorphismRestriction #-}
+Text.Lithos.Parse
+=================
 
+Lithos provides a parser for Literate Haskell files; currently, only the bird-tracks style of literate programming is supported.
+
+> {-# LANGUAGE NoMonomorphismRestriction #-}
+> 
 > module Text.Lithos.Parse where
 > import Text.Lithos.Data
-
+> 
 > import Text.ParserCombinators.Parsec hiding ((<|>), many, optional)
 > import qualified Text.Parsec.Prim as P
 > import Control.Applicative

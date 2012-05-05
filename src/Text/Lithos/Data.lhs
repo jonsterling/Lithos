@@ -1,3 +1,6 @@
+Text.Lithos.Data
+================
+
 > {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 > module Text.Lithos.Data where
