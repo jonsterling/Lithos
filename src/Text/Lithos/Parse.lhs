@@ -9,7 +9,6 @@ Lithos provides a parser for Literate Haskell files; currently, only the bird-tr
 > import Text.Lithos.Data
 > 
 > import Text.ParserCombinators.Parsec hiding ((<|>), many, optional)
-> import qualified Text.Parsec.Prim as P
 > import Control.Applicative
 > import Control.Monad (when)
 > import Data.Monoid

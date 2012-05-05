@@ -2,7 +2,9 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Text.Lithos.Write where
+module Text.Lithos.Write
+  ( WriteHtml(..) ) where
+
 import Text.Lithos.Data
 import Text.Hamlet
 import Text.Cassius
@@ -19,12 +21,20 @@ class WriteHtml a where
   writeHtmlString :: a -> String
   writeHtmlString = renderHtml . writeHtml
 
+writerOptions :: P.WriterOptions
+writerOptions =
+  P.defaultWriterOptions 
+    { P.writerHTMLMathMethod  = P.MathJax "" }
+
+readerOptions :: P.ParserState
+readerOptions =
+  P.defaultParserState
+    { P.stateLiterateHaskell = True }
+
 instance WriteHtml Prose where
   writeHtml (Prose ls) = write . read . unlines $ ls
-    where write = P.writeHtml writeOpts
-          read = P.readMarkdown readOpts
-          writeOpts = P.defaultWriterOptions { P.writerHTMLMathMethod = P.MathJax "" }
-          readOpts = P.defaultParserState { P.stateLiterateHaskell = True }
+    where write = P.writeHtml writerOptions
+          read = P.readMarkdown readerOptions
 
 
 
