@@ -6,20 +6,24 @@
 > import Text.ParserCombinators.Parsec hiding ((<|>), many, optional)
 > import Text.Parsec.Prim (manyAccum)
 > import Control.Applicative
+> import Control.Monad (when)
 > import Data.Monoid
-> import Data.Maybe
-> import Control.Monad
-
-Before we begin parsing, a few primitives must be defined:
 
 > tilEOL = manyTill (noneOf "\n") eol
 >   where eol = newline <|> ('\n' <$ eof)
 
-Code appears following "bird tracks":
+*Code* appears following "bird tracks", like the following:
+
+< > converge :: Eq a => (a -> a) -> a -> a
+< > converge f x =
+< >   let y = f x in
+< >     if x == y then x else converge f y
 
 > code = Code <$> trimMany1 codeLine
 >   where codeLine = birdTrack *> tilEOL
 >         birdTrack = string "> "
+
+Any other text (including blank lines) is considered *prose*.
 
 > prose = Prose <$> trimMany1 (try textLine <|> blankLine)
 >   where textLine = (:) <$> lineHead <*> tilEOL

@@ -22,7 +22,9 @@ class WriteHtml a where
 instance WriteHtml Prose where
   writeHtml (Prose ls) = write . read . unlines $ ls
     where write = P.writeHtml P.defaultWriterOptions
-          read = P.readMarkdown P.defaultParserState
+          read = P.readMarkdown
+                  P.defaultParserState { P.stateLiterateHaskell = True }
+
 
 instance WriteHtml Code where
   writeHtml (Code ls) = format . highlight . unlines $ ls
