@@ -4,7 +4,7 @@
 > import Text.Lithos.Data
 
 > import Text.ParserCombinators.Parsec hiding ((<|>), many, optional)
-> import Text.Parsec.Prim (manyAccum)
+> import qualified Text.Parsec.Prim as P
 > import Control.Applicative
 > import Control.Monad (when)
 > import Data.Monoid
@@ -58,6 +58,7 @@ We define an auxiliary combinator `optionZero` which either returns
 the result of the input parser if satisfied, or the appropriate zero
 value.
 
+> optionZero :: Monoid m => Parser m -> Parser m
 > optionZero = option mempty
 
 Finally, a document is composed of many sections.

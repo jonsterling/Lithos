@@ -142,11 +142,13 @@ documentScript =
         sub = (a,b) => $(this).html $(this).html().replace a,b
 
         sub '-&gt;',     '&rarr;'
+        sub '&lt;-',     '&larr;'
         sub '=&gt;',     '&rArr;'
         sub '==',        '&equiv;'
         sub 'forall',    '&forall;'
         sub '()',        '&empty;'
         sub '&lt;*&gt;', '&#8859;'
+        sub '::',        '&#8759;'
   |]
 
 -- This dumb bullshit for Cassius
