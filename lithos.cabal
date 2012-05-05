@@ -51,7 +51,7 @@ Executable lithos
   Main-is: Main.hs
   
   -- Packages needed in order to build this package.
-  Build-depends: base, parsec, highlighting-kate, pandoc, blaze-html, shakespeare-css, hamlet
+  Build-depends: base, parsec, highlighting-kate, pandoc, blaze-html, shakespeare-css, shakespeare-js, hamlet
   
   -- Modules not exported by this package.
   Other-modules: Text.Lithos
