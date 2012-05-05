@@ -6,6 +6,8 @@ module Text.Lithos.Write where
 import Text.Lithos.Data
 import Text.Hamlet
 import Text.Cassius
+import Text.Julius
+import Text.Blaze
 import Text.Blaze.Renderer.String (renderHtml)
 import qualified Text.Pandoc as P
 import qualified Text.Highlighting.Kate as K
@@ -37,14 +39,22 @@ instance WriteHtml Section where
 instance WriteHtml Document where
   writeHtml (Document ss) = do
     [shamlet|
+      <script src=https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js>
+      <script>
+        #{documentScript render}
       <style>
-        #{renderCss $ documentStyle render}
+        #{documentStyle render}
       <table>
         <tbody>
           $forall s <- ss
             ^{writeHtml s}
     |]
 
+instance ToHtml Javascript where
+  toHtml js = preEscapedLazyText (renderJavascript js)
+
+instance ToHtml Css where
+  toHtml css = preEscapedLazyText (renderCss css)
 
 documentStyle =
   [cassius|
@@ -120,6 +130,25 @@ documentStyle =
     .er
       color: red
       font-weight: bold
+  |]
+
+documentScript = 
+  [julius|
+    $(document).ready(function() {
+      $("code span").each(function () { 
+        var _this = this;
+        function sub(a,b) {
+          $(_this).html($(_this).html().replace(a,b));
+        }
+        
+        sub('-&gt;', '&rarr;');
+        sub('=&gt;', '&rArr;');
+        sub('==', '&equiv;');
+        sub('forall', '&forall;');
+        sub('()', '&empty;');
+        sub('&lt;*&gt;', '&#8859;');
+      });
+    });
   |]
 
 -- This dumb bullshit for Cassius
