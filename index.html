@@ -1,0 +1,50 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script><script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script>(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  $(function() {
+    return $('code span').each(function() {
+      var sub;
+      sub = __bind(function(a, b) {
+        return $(this).html($(this).html().replace(a, b));
+      }, this);
+      sub('-&gt;', '&rarr;');
+      sub('&lt;-', '&larr;');
+      sub('=&gt;', '&rArr;');
+      sub('==', '&equiv;');
+      sub('forall', '&forall;');
+      sub('()', '&empty;');
+      sub('&lt;*&gt;', '&#8859;');
+      return sub('::', '&#8759;');
+    });
+  });
+}).call(this);
+</script><style>body{color:#252519;margin:0;padding:0}p{margin:0 0 15px 0}table{border-collapse:collapse}td{border:0;outline:0;vertical-align:top}td.prose{max-width:450px;min-width:450px;min-height:5px;padding:10px 25px 1 px 50px;overflow-x:hidden;text-align:left;font-family:Palatino;font-size:11pt;line-height:1.4em}td.code{padding:14px 15px 16px 25px;width:100%;background:#fdf6e3;border-left:1px solid #eee8d5}pre, tt, code{font-size:11pt;line-height:1.5em;font-family:Letter Gothic Std;margin:0;padding:0;color:#657b83}.kw{color:#859900}.dt{color:#cb4b16}.dv {color:#0000FF}.bn {color:#0000FF}.fl {color:#800080}.ch{color:#93a1a1}.st{color:#93a1a1}.co{color:#93a1a1;font-style:italic}.al{color:green;font-weight:bold}.fu{color:#268bd2}.er{color:red;font-weight:bold}</style><table><tbody><tr><td class="prose"><h1 id="text.lithos.data">Text.Lithos.Data</h1></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></code></pre></td></tr><tr><td class="prose"></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="kw">module</span> <span class="dt">Text.Lithos.Data</span> <span class="kw">where</span>
+<span class="kw">import</span> <span class="dt">Data.Monoid</span></code></pre></td></tr><tr><td class="prose"><p>Let's define our model. Each <code>Section</code> is a block of prose and a block of code.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="kw">data</span> <span class="dt">Section</span> <span class="fu">=</span> <span class="dt">Section</span> <span class="dt">Prose</span> <span class="dt">Code</span> <span class="kw">deriving</span> <span class="kw">Show</span>
+<span class="kw">newtype</span> <span class="dt">Prose</span> <span class="fu">=</span> <span class="dt">Prose</span> [<span class="dt">String</span>] <span class="kw">deriving</span> (<span class="kw">Show</span>,<span class="dt">Monoid</span>)
+<span class="kw">newtype</span> <span class="dt">Code</span> <span class="fu">=</span> <span class="dt">Code</span> [<span class="dt">String</span>] <span class="kw">deriving</span> (<span class="kw">Show</span>,<span class="dt">Monoid</span>)
+<span class="kw">newtype</span> <span class="dt">Document</span> <span class="fu">=</span> <span class="dt">Document</span> [<span class="dt">Section</span>] <span class="kw">deriving</span> <span class="kw">Show</span></code></pre></td></tr><tr><td class="prose"><h1 id="text.lithos.parse">Text.Lithos.Parse</h1>
+<p>Lithos provides a parser for Literate Haskell files; currently, only the bird-tracks style of literate programming is supported.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="ot">{-# LANGUAGE NoMonomorphismRestriction #-}</span>
+
+<span class="kw">module</span> <span class="dt">Text.Lithos.Parse</span> <span class="kw">where</span>
+<span class="kw">import</span> <span class="dt">Text.Lithos.Data</span>
+
+<span class="kw">import</span> <span class="dt">Text.ParserCombinators.Parsec</span> <span class="kw">hiding</span> ((<span class="fu">&lt;|&gt;</span>), many, optional)
+<span class="kw">import</span> <span class="dt">Control.Applicative</span>
+<span class="kw">import</span> <span class="dt">Control.Monad</span> (when)
+<span class="kw">import</span> <span class="dt">Data.Monoid</span></code></pre></td></tr><tr><td class="prose"></td><td class="code"><pre class="sourceCode"><code class="sourceCode">tilEOL <span class="fu">=</span> manyTill (noneOf <span class="st">&quot;\n&quot;</span>) eol
+  <span class="kw">where</span> eol <span class="fu">=</span> newline <span class="fu">&lt;|&gt;</span> (<span class="ch">&#39;\n&#39;</span> <span class="fu">&lt;$</span> eof)</code></pre></td></tr><tr><td class="prose"><p><em>Code</em> appears following &quot;bird tracks&quot;, like the following:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">&gt;</span><span class="ot"> converge ::</span> <span class="kw">Eq</span> a <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+<span class="fu">&gt;</span> converge f x <span class="fu">=</span>
+<span class="fu">&gt;</span>   <span class="kw">let</span> y <span class="fu">=</span> f x <span class="kw">in</span>
+<span class="fu">&gt;</span>     <span class="kw">if</span> x <span class="fu">==</span> y <span class="kw">then</span> x <span class="kw">else</span> converge f y</code></pre></td><td class="code"><pre class="sourceCode"><code class="sourceCode">code <span class="fu">=</span> <span class="dt">Code</span> <span class="fu">&lt;$&gt;</span> trimMany1 codeLine
+  <span class="kw">where</span> codeLine <span class="fu">=</span> birdTrack <span class="fu">*&gt;</span> tilEOL
+        birdTrack <span class="fu">=</span> string <span class="st">&quot;&gt; &quot;</span></code></pre></td></tr><tr><td class="prose"><p>Any other text (including blank lines) is considered <em>prose</em>.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode">prose <span class="fu">=</span> <span class="dt">Prose</span> <span class="fu">&lt;$&gt;</span> trimMany1 (try textLine <span class="fu">&lt;|&gt;</span> blankLine)
+  <span class="kw">where</span> textLine <span class="fu">=</span> (<span class="fu">:</span>) <span class="fu">&lt;$&gt;</span> lineHead <span class="fu">&lt;*&gt;</span> tilEOL
+        lineHead <span class="fu">=</span> <span class="kw">do</span> ch <span class="ot">&lt;-</span> noneOf <span class="st">&quot;\n&quot;</span>
+                      when (ch <span class="fu">==</span> <span class="ch">&#39;&gt;&#39;</span>) <span class="fu">$</span> notFollowedBy space
+                      <span class="fu">return</span> ch
+        blankLine <span class="fu">=</span> mempty <span class="fu">&lt;$</span> char <span class="ch">&#39;\n&#39;</span></code></pre></td></tr><tr><td class="prose"><p>Now we need to define some new parser combinators. <code>trimMany1</code> behaves just like <code>many1</code>, except that it returns a list trimmed for monoidal zeroes at either end.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode">trimMany1 p <span class="fu">=</span> trimZero <span class="fu">&lt;$&gt;</span> many1 p</code></pre></td></tr><tr><td class="prose"><p>We use an auxiliary function <code>trimZero</code> to clean up the ends of lists of monoidal elements:</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="ot">trimZero ::</span> (<span class="kw">Eq</span> m, <span class="dt">Monoid</span> m) <span class="ot">=&gt;</span> [m] <span class="ot">-&gt;</span> [m]
+trimZero <span class="fu">=</span> dropEmpty <span class="fu">.</span> <span class="fu">reverse</span> <span class="fu">.</span> dropEmpty <span class="fu">.</span> <span class="fu">reverse</span>
+  <span class="kw">where</span> dropEmpty <span class="fu">=</span> <span class="fu">dropWhile</span> (<span class="fu">==</span> mempty)</code></pre></td></tr><tr><td class="prose"><p>There are three options for a section: it may have both prose and code, it may have only code, and it may have only prose. The latter two possibilities will likely occur at the edges of documents, whereas only all the interior sections should have both prose and code.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode">section <span class="fu">=</span> try (<span class="dt">Section</span> <span class="fu">&lt;$&gt;</span> prose <span class="fu">&lt;*&gt;</span> code) 
+      <span class="fu">&lt;|&gt;</span> try (<span class="dt">Section</span> <span class="fu">&lt;$&gt;</span> optionZero prose <span class="fu">&lt;*&gt;</span> code)
+      <span class="fu">&lt;|&gt;</span> <span class="dt">Section</span> <span class="fu">&lt;$&gt;</span> prose <span class="fu">&lt;*&gt;</span> optionZero code</code></pre></td></tr><tr><td class="prose"><p>We define an auxiliary combinator <code>optionZero</code> which either returns the result of the input parser if satisfied, or the appropriate zero value.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode"><span class="ot">optionZero ::</span> <span class="dt">Monoid</span> m <span class="ot">=&gt;</span> <span class="dt">Parser</span> m <span class="ot">-&gt;</span> <span class="dt">Parser</span> m
+optionZero <span class="fu">=</span> option mempty</code></pre></td></tr><tr><td class="prose"><p>Finally, a document is composed of many sections.</p></td><td class="code"><pre class="sourceCode"><code class="sourceCode">literateDocument <span class="fu">=</span> <span class="dt">Document</span> <span class="fu">&lt;$&gt;</span> many section</code></pre></td></tr></tbody></table>
