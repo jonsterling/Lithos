@@ -48,13 +48,14 @@ Cabal-version:       >=1.2
 
 Executable lithos
   -- .hs or .lhs file containing the Main module.
-  -- Main-is:             
+  Main-is: Main.hs
   
   -- Packages needed in order to build this package.
-  -- Build-depends:       
+  Build-depends: base, parsec, highlighting-kate, pandoc, blaze-html, shakespeare-css, hamlet
   
   -- Modules not exported by this package.
-  -- Other-modules:       
+  Other-modules: Text.Lithos
+  hs-source-dirs: src
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         
