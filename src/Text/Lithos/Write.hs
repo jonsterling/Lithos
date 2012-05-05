@@ -7,7 +7,8 @@ import Text.Lithos.Data
 import Text.Hamlet
 import Text.Cassius
 import Text.Julius
-import Text.Blaze
+import Text.Coffee
+import Text.Blaze (ToHtml(..),preEscapedLazyText)
 import Text.Blaze.Renderer.String (renderHtml)
 import qualified Text.Pandoc as P
 import qualified Text.Highlighting.Kate as K
@@ -133,22 +134,17 @@ documentStyle =
   |]
 
 documentScript = 
-  [julius|
-    $(document).ready(function() {
-      $("code span").each(function () { 
-        var _this = this;
-        function sub(a,b) {
-          $(_this).html($(_this).html().replace(a,b));
-        }
-        
-        sub('-&gt;', '&rarr;');
-        sub('=&gt;', '&rArr;');
-        sub('==', '&equiv;');
-        sub('forall', '&forall;');
-        sub('()', '&empty;');
-        sub('&lt;*&gt;', '&#8859;');
-      });
-    });
+  [coffee|
+    $ -> 
+      $('code span').each ->
+        sub = (a,b) => $(this).html $(this).html().replace a,b
+
+        sub '-&gt;',     '&rarr;'
+        sub '=&gt;',     '&rArr;'
+        sub '==',        '&equiv;'
+        sub 'forall',    '&forall;'
+        sub '()',        '&empty;'
+        sub '&lt;*&gt;', '&#8859;'
   |]
 
 -- This dumb bullshit for Cassius
