@@ -21,9 +21,11 @@ class WriteHtml a where
 
 instance WriteHtml Prose where
   writeHtml (Prose ls) = write . read . unlines $ ls
-    where write = P.writeHtml P.defaultWriterOptions
-          read = P.readMarkdown
-                  P.defaultParserState { P.stateLiterateHaskell = True }
+    where write = P.writeHtml writeOpts
+          read = P.readMarkdown readOpts
+          writeOpts = P.defaultWriterOptions { P.writerHTMLMathMethod = P.MathJax "" }
+          readOpts = P.defaultParserState { P.stateLiterateHaskell = True }
+
 
 
 instance WriteHtml Code where
@@ -43,6 +45,7 @@ instance WriteHtml Document where
   writeHtml (Document ss) = do
     [shamlet|
       <script src=https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js>
+      <script src=http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML>
       <script>
         #{documentScript render}
       <style>
