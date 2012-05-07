@@ -64,7 +64,7 @@ instance WriteHtml Document where
         <tbody>
           $forall s <- ss
             ^{writeHtml s}
-    |]
+    |] where render _ _ = ""
 
 instance ToHtml Javascript where
   toHtml js = preEscapedLazyText (renderJavascript js)
@@ -163,7 +163,3 @@ documentScript =
         sub '&lt;*&gt;', '&#8859;'
         sub '::',        '&#8759;'
   |]
-
--- This dumb bullshit for Cassius
-data MyRoute = MyRoute
-render _ _ = ""
